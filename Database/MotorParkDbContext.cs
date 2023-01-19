@@ -10,7 +10,9 @@ namespace MotorPark.Database {
     
     public DbSet<Entities.EnginePart> PartsSet { get; set; }
 
-    public DbSet<Entities.EnginePartType> TypesSet { get; set; }
+    public DbSet<Entities.PartType> TypesSet { get; set; }
+
+    public DbSet<Entities.User> Users { get; set; }
     
   }
 }

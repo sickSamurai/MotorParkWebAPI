@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
 using MotorPark.Database;
-using MotorPark.Services;
+using MotorPark.Services.EnginesDbService;
+using MotorPark.Services.UsersDbService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSqlServer<MotorParkDbContext>(builder.Configuration.GetConnectionString("MotorPark"));
 builder.Services.AddScoped<IEngineDbService, EngineDbService>();
+builder.Services.AddScoped<IUsersDbService, UsersDbService>();
 builder.Services.AddCors(options => {
-  options.AddPolicy(name: "CorsPolicy", policy => {
-    policy.WithOrigins("https://localhost:4200");
+  options.AddPolicy(name: "DefaultPolicy", policy => {
+    policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
   });
 });
 
@@ -32,7 +35,8 @@ if(app.Environment.IsDevelopment()) {
 }
 
 app.UseHttpsRedirection();
-app.UseCors("CorsPolicy");
+app.UseRouting();
+app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
